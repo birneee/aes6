@@ -36,7 +36,8 @@ func newGCMWithNonceAndTagSize(cipher cipher.Block, nonceSize, tagSize int) (cip
 		cipherType := reflect.TypeOf(cipher)
 		switch cipherType.String() {
 		case "*aes.aesCipherGCM":
-			a := *(**aesCipherGCM)(unsafe.Pointer(&cipher))
+			// a := (*aesCipherGCM)(unsafe.Pointer(reflect.ValueOf(cipher).Pointer())) // alternative
+			a := (*((*[2]*aesCipherGCM)(unsafe.Pointer(&cipher))))[1] // this is a bit hacky
 			return a.NewGCM(nonceSize, tagSize)
 		case "*aes8.aesCipherGCM":
 			return cipher.NewGCM(nonceSize, tagSize)
